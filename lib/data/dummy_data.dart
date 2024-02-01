@@ -3,22 +3,22 @@ import 'package:pwd/models/account.dart';
 var duumyAccounts = [
   Account(
     url: 'twitter.com', 
-    login: 'uhscmsc_twitter', 
+    login: 'username_twitter', 
     password: 'qwerty', 
     ),
   Account(
     url: 'vk.com', 
-    login: 'uhscmsc_vk', 
+    login: 'username_vk', 
     password: 'qwerty123', 
     ),
   Account(
     url: 'reddit.com', 
-    login: 'uhscmsc_reddit', 
+    login: 'username_reddit', 
     password: 'qwerty321', 
     ),
   Account(
     url: 'google.com', 
-    login: 'uhscmsc_google', 
+    login: 'username_google', 
     password: 'qwerty543', 
     ),
 ];

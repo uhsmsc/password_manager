@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pwd/models/account.dart';
 
 class NewAccountScreen extends StatelessWidget {
-  NewAccountScreen({Key? key, required this.onSave}) : super(key: key);
+  NewAccountScreen({super.key, required this.onSave});
 
   final Function(Account) onSave;
 
@@ -23,12 +23,10 @@ class NewAccountScreen extends StatelessWidget {
           children: [
             TextField(
               controller: _urlController,
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    fontSize: 18,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium,
               decoration: InputDecoration(
                 labelText: 'URL',
+                labelStyle: Theme.of(context).textTheme.bodySmall,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -39,12 +37,10 @@ class NewAccountScreen extends StatelessWidget {
             ),
             TextField(
               controller: _loginController,
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    fontSize: 18,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium,
               decoration: InputDecoration(
                 labelText: 'LOGIN/EMAIL',
+                labelStyle: Theme.of(context).textTheme.bodySmall,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -55,12 +51,10 @@ class NewAccountScreen extends StatelessWidget {
             ),
             TextField(
               controller: _passwordController,
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground,
-                    fontSize: 18,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium,
               decoration: InputDecoration(
                 labelText: 'PASSWORD',
+                labelStyle: Theme.of(context).textTheme.bodySmall,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

@@ -9,7 +9,22 @@ final theme = ThemeData(
     brightness: Brightness.dark,
     seedColor: const Color.fromARGB(255, 18, 18, 18),
   ),
-  textTheme: GoogleFonts.montserratTextTheme(),
+  textTheme: GoogleFonts.montserratTextTheme().copyWith(
+    bodyLarge: GoogleFonts.montserrat(
+      color: const Color.fromARGB(255, 255, 255, 255),
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+    ), 
+    bodyMedium: GoogleFonts.montserrat(
+      color: const Color.fromARGB(255, 255, 255, 255),
+      fontSize: 18,
+    ),
+    bodySmall: GoogleFonts.montserrat(
+      color: const Color.fromARGB(255, 87, 87, 87),
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    ),
+  ),
 );
 
 void main() {

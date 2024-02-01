@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:pwd/data/dummy_data.dart';
 import 'package:pwd/models/account.dart';
 import 'package:pwd/screens/new_account.dart';
 import 'package:pwd/widgets/account_item.dart';
 
 class AccountsListScreen extends StatefulWidget {
-  const AccountsListScreen({Key? key}) : super(key: key);
+  const AccountsListScreen({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -13,7 +14,7 @@ class AccountsListScreen extends StatefulWidget {
 }
 
 class _AccountsListScreenState extends State<AccountsListScreen> {
-  final List<Account> accounts = [];
+  final List<Account> accounts = duumyAccounts;
 
   void _openAddAccount(BuildContext context) async {
     final newAccount = await Navigator.of(context).push(

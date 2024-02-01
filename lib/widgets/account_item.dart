@@ -2,17 +2,41 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pwd/models/account.dart';
+import 'package:pwd/screens/account_details.dart';
 
 class AccountItem extends StatelessWidget {
-  const AccountItem({Key? key, required this.account}) : super(key: key);
+  const AccountItem({super.key, required this.account});
 
   final Account account;
+
+  void _openAccountDetails(BuildContext context, Account account) async {
+  await Navigator.of(context).push(
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => AccountDetailsScreen(account: account),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutQuart;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         print('Account tapped: ${account.url}');
+        _openAccountDetails(context, account);
       },
       child: ListTile(
         leading: ClipRRect(
