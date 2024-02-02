@@ -64,6 +64,7 @@ class _AccountsListScreenState extends State<AccountsListScreen> {
 
     if (accounts.isNotEmpty) {
       content = ListView.builder(
+        padding: const EdgeInsets.fromLTRB(0, 10, 30, 10),
         itemCount: accounts.length,
         itemBuilder: (ctx, index) => AccountItem(account: accounts[index]),
       );

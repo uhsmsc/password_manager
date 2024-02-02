@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pwd/models/account.dart';
+import 'package:pwd/widgets/common_widgets.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
-  final Account account;
-
   const AccountDetailsScreen({super.key, required this.account});
+
+  final Account account;
 
   @override
   State<StatefulWidget> createState() {
@@ -37,47 +39,33 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         title: Text(
           widget.account.url,
           style: Theme.of(context).textTheme.bodyLarge,
-          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {
-              print('Edit button tapped');
-            },
+            onPressed: () {},
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(15, 10, 0, 10),
         child: ListView(
           children: [
-            Text(
+            _buildListTile(
               'URL',
-              style: Theme.of(context).textTheme.bodySmall, 
-            ),
-            Text(
               widget.account.url,
-              style: Theme.of(context).textTheme.bodyMedium, 
+              () => _copyToClipboard('URL', widget.account.url),
             ),
-            const SizedBox(height: 20),
-            Text(
-              'LOGIN',
-              style: Theme.of(context).textTheme.bodySmall, 
-            ),
-            Text(
+            _buildListTile(
+              'LOGIN/EMAIL',
               widget.account.login,
-              style: Theme.of(context).textTheme.bodyMedium, 
+              () => _copyToClipboard('Логин', widget.account.login),
             ),
-            const SizedBox(height: 20),
-            Text(
+            _buildListTile(
               'PASSWORD',
-              style: Theme.of(context).textTheme.bodySmall, 
-            ),
-            Text(
               _showPassword ? widget.account.password : _getMaskedPassword(),
-              style: Theme.of(context).textTheme.bodyMedium, 
+              () => _copyToClipboard('Пароль', widget.account.password),
             ),
-            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -90,18 +78,34 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   },
                   child: const Text('Show Password'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    print('Copy Password button tapped');
-                  },
-                  child: const Text('Copy Password'),
-                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildListTile(String title, String subtitle, VoidCallback onPressed) {
+    return ListTile(
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+      subtitle: Text(
+        subtitle,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+      trailing: IconButton(
+        onPressed: onPressed,
+        icon: const Icon(Icons.copy_rounded),
+      ),
+    );
+  }
+
+  void _copyToClipboard(String label, String data) {
+    Clipboard.setData(ClipboardData(text: data));
+    SnackbarHandler.showSnackbar(context, '$label скопирован в буфер обмена');
   }
 
   String _getMaskedPassword() {

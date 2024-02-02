@@ -9,7 +9,7 @@ class Account {
     required this.password,
     }) : id = uuid.v4(), iconUrl = 'https://icons.bitwarden.net/$url/icon.png';
 
-  final String id;
+  String id;
   String url;
   String login;
   String password;

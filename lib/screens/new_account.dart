@@ -21,56 +21,40 @@ class NewAccountScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextField(
-              controller: _urlController,
-              style: Theme.of(context).textTheme.bodyMedium,
-              decoration: InputDecoration(
-                labelText: 'URL',
-                labelStyle: Theme.of(context).textTheme.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextField(
-              controller: _loginController,
-              style: Theme.of(context).textTheme.bodyMedium,
-              decoration: InputDecoration(
-                labelText: 'LOGIN/EMAIL',
-                labelStyle: Theme.of(context).textTheme.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            TextField(
-              controller: _passwordController,
-              style: Theme.of(context).textTheme.bodyMedium,
-              decoration: InputDecoration(
-                labelText: 'PASSWORD',
-                labelStyle: Theme.of(context).textTheme.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              obscureText: true,
-            ),
+            _buildTextField(_urlController, 'URL', context: context),
             const SizedBox(height: 20),
-            ElevatedButton(
-              style: TextButton.styleFrom(padding: const EdgeInsets.fromLTRB(25, 12, 25, 12)),
-              onPressed: () {
-                _saveAccount(context);
-              },
+            _buildTextField(_loginController, 'LOGIN/EMAIL', context: context),
+            const SizedBox(height: 20),
+            _buildTextField(_passwordController, 'PASSWORD', obscureText: true, context: context),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: () => _saveAccount(context),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.fromLTRB(25, 12, 25, 12),
+              ),
               child: const Text('Save Account'),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label, {bool obscureText = false, required BuildContext context}) {
+  return TextField(
+    controller: controller,
+    style: Theme.of(context).textTheme.bodyMedium,
+    decoration: _buildInputDecoration(label, context: context),
+    obscureText: obscureText,
+  );
+}
+
+  InputDecoration _buildInputDecoration(String label, {required BuildContext context}) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: Theme.of(context).textTheme.bodySmall,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
       ),
     );
   }
@@ -82,10 +66,10 @@ class NewAccountScreen extends StatelessWidget {
 
     if (url.isNotEmpty && login.isNotEmpty && password.isNotEmpty) {
       Account newAccount = Account(url: url, login: login, password: password);
-      onSave(newAccount); 
-      Navigator.pop(context); 
+      onSave(newAccount);
+      Navigator.pop(context);
     } else {
-      // Ошибка
+      // Обработка ошибки
     }
   }
 }

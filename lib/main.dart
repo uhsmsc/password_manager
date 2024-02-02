@@ -18,10 +18,11 @@ final theme = ThemeData(
     bodyMedium: GoogleFonts.montserrat(
       color: const Color.fromARGB(255, 255, 255, 255),
       fontSize: 18,
+      fontWeight: FontWeight.w500,
     ),
     bodySmall: GoogleFonts.montserrat(
-      color: const Color.fromARGB(255, 87, 87, 87),
-      fontSize: 16,
+      color: const Color.fromARGB(255, 146, 146, 146),
+      fontSize: 14,
       fontWeight: FontWeight.w500,
     ),
   ),

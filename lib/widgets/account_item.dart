@@ -10,26 +10,28 @@ class AccountItem extends StatelessWidget {
   final Account account;
 
   void _openAccountDetails(BuildContext context, Account account) async {
-  await Navigator.of(context).push(
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => AccountDetailsScreen(account: account),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.easeInOutQuart;
+    await Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            AccountDetailsScreen(account: account),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOutQuart;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-        var offsetAnimation = animation.drive(tween);
+          var offsetAnimation = animation.drive(tween);
 
-        return SlideTransition(
-          position: offsetAnimation,
-          child: child,
-        );
-      },
-    ),
-  );
-}
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +47,13 @@ class AccountItem extends StatelessWidget {
         ),
         title: Text(
           account.url,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 18, height: 1),
         ),
         subtitle: Text(
           account.login,
-          style: const TextStyle(fontSize: 14),
+          style: Theme.of(context).textTheme.bodySmall,
+          //style: const TextStyle(fontSize: 14),
         ),
       ),
     );
@@ -86,7 +90,7 @@ class AccountItem extends StatelessWidget {
       );
     } catch (error) {
       print('Error generating alternative icon: $error');
-      return Container(); 
+      return Container();
     }
   }
 
