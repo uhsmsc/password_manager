@@ -1,71 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:pwd/models/account.dart';
+import 'package:pwd/widgets/input_field.dart';
 
 class NewAccountScreen extends StatelessWidget {
-  NewAccountScreen({super.key, required this.onSave});
+  const NewAccountScreen({Key? key, required this.onSave}) : super(key: key);
 
   final Function(Account) onSave;
 
-  final TextEditingController _urlController = TextEditingController();
-  final TextEditingController _loginController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
+    final TextEditingController urlController = TextEditingController();
+    final TextEditingController loginController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Account'),
+        title: const Text('Новый аккаунт'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildTextField(_urlController, 'URL', context: context),
+            InputField(controller: urlController, label: 'URL', obscureText: false),
             const SizedBox(height: 20),
-            _buildTextField(_loginController, 'LOGIN/EMAIL', context: context),
+            InputField(controller: loginController, label: 'LOGIN/EMAIL', obscureText: false),
             const SizedBox(height: 20),
-            _buildTextField(_passwordController, 'PASSWORD', obscureText: true, context: context),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () => _saveAccount(context),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.fromLTRB(25, 12, 25, 12),
+            InputField(controller: passwordController, label: 'PASSWORD'),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(200, 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  ),
               ),
-              child: const Text('Save Account'),
-            ),
+              onPressed: () => _saveAccount(context, urlController.text, loginController.text, passwordController.text),
+              child: const Text(
+                'Добавить аккаунт',
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {bool obscureText = false, required BuildContext context}) {
-  return TextField(
-    controller: controller,
-    style: Theme.of(context).textTheme.bodyMedium,
-    decoration: _buildInputDecoration(label, context: context),
-    obscureText: obscureText,
-  );
-}
-
-  InputDecoration _buildInputDecoration(String label, {required BuildContext context}) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: Theme.of(context).textTheme.bodySmall,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-      ),
-    );
-  }
-
-  void _saveAccount(BuildContext context) {
-    String url = _urlController.text;
-    String login = _loginController.text;
-    String password = _passwordController.text;
-
+  void _saveAccount(BuildContext context, String url, String login, String password) {
     if (url.isNotEmpty && login.isNotEmpty && password.isNotEmpty) {
-      Account newAccount = Account(url: url, login: login, password: password);
+      final Account newAccount = Account(url: url, login: login, password: password);
       onSave(newAccount);
       Navigator.pop(context);
     } else {

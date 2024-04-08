@@ -38,7 +38,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         centerTitle: true,
         title: Text(
           widget.account.url,
-          style: Theme.of(context).textTheme.bodyLarge,
         ),
         actions: [
           IconButton(
@@ -70,13 +69,20 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(200, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      ),
+                  ),
                   onPressed: () {
                     setState(() {
                       _showPassword = !_showPassword;
                     });
-                    print('Show Password button tapped');
                   },
-                  child: const Text('Show Password'),
+                  child: Text(
+                    _showPassword ? 'Скрыть пароль' : 'Показать пароль',
+                  ),
                 ),
               ],
             ),

@@ -61,7 +61,7 @@ class AccountItem extends StatelessWidget {
 
   Widget _buildIcon(String iconUrl) {
     print(iconUrl);
-    return Container(
+    return SizedBox(
       width: 55,
       height: 55,
       child: CachedNetworkImage(
@@ -84,7 +84,7 @@ class AccountItem extends StatelessWidget {
         child: Center(
           child: Text(
             text.isNotEmpty ? text[0].toUpperCase() : '',
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       );
