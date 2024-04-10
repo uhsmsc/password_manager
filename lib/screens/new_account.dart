@@ -3,7 +3,7 @@ import 'package:pwd/models/account.dart';
 import 'package:pwd/widgets/input_field.dart';
 
 class NewAccountScreen extends StatelessWidget {
-  const NewAccountScreen({Key? key, required this.onSave}) : super(key: key);
+  const NewAccountScreen({super.key, required this.onSave});
 
   final Function(Account) onSave;
 

@@ -1,8 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:crypto/crypto.dart';
+import 'package:argon2/argon2.dart';
+import 'dart:typed_data';
 import 'dart:convert';
-
 import 'package:pwd/widgets/input_field.dart';
 
 class AuthenticationScreen extends StatelessWidget {
@@ -121,14 +122,35 @@ void authenticateAndNavigate(BuildContext context) {
   });
 }
 
-  Future<bool> authenticate(String enteredPassword) async {
-    const storage = FlutterSecureStorage();
-    String? masterPassword = await storage.read(key: 'master_password');
-    if (masterPassword != null) {
-      String hashedEnteredPassword = sha256.convert(utf8.encode(enteredPassword)).toString();
-      return hashedEnteredPassword == masterPassword;
+Future<bool> authenticate(String enteredPassword) async {
+    final storage = FlutterSecureStorage();
+    final masterPasswordHash = await storage.read(key: 'master_password');
+    if (masterPasswordHash != null) {
+      final argon2 = Argon2BytesGenerator();
+      final passwordBytes = utf8.encode(enteredPassword);
+      final salt = Uint8List.fromList(utf8.encode('somesalt'));
+
+      final parameters = Argon2Parameters(
+        Argon2Parameters.ARGON2_i,
+        salt,
+        version: Argon2Parameters.ARGON2_VERSION_10,
+        iterations: 2,
+        memoryPowerOf2: 16,
+      );
+
+      final hash = Uint8List(32);
+      argon2.init(parameters);
+      argon2.generateBytes(passwordBytes, hash, 0, hash.length);
+
+      final expectedHash = base64.decode(masterPasswordHash);
+
+      return hash.length == expectedHash.length &&
+          IterableEquality().equals(hash, expectedHash);
     } else {
       return false;
     }
   }
+
+
+
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pwd/screens/create_master_password.dart';
 
 class GreetingScreen extends StatelessWidget {
-  const GreetingScreen({Key? key}) : super(key: key);
+  const GreetingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class GreetingScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CreateMasterPasswordScreen(),
+                      builder: (context) => const CreateMasterPasswordScreen(),
                     ),
                   );
                 },

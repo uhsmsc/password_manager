@@ -11,8 +11,8 @@ class InputField extends StatelessWidget {
     required this.label,
     this.onChanged,
     this.obscureText = true,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

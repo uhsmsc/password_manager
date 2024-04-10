@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:crypto/crypto.dart';
-import 'dart:convert';
-
+import 'package:argon2/argon2.dart';
 import 'package:pwd/widgets/input_field.dart';
+import 'dart:typed_data';
+import 'dart:convert';
 
 class CreateMasterPasswordScreen extends StatefulWidget {
   const CreateMasterPasswordScreen({super.key});
@@ -119,10 +119,27 @@ class _CreateMasterPasswordScreenState
     });
   }
 
-  Future<void> registerFirstTime(String masterPassword) async {
-    const storage = FlutterSecureStorage();
-    String hashedPassword =
-        sha256.convert(utf8.encode(masterPassword)).toString();
+Future<void> registerFirstTime(String masterPassword) async {
+    final storage = FlutterSecureStorage();
+    final argon2 = Argon2BytesGenerator();
+    final salt = Uint8List.fromList(utf8.encode('somesalt'));
+
+    final parameters = Argon2Parameters(
+      Argon2Parameters.ARGON2_i,
+      salt,
+      version: Argon2Parameters.ARGON2_VERSION_10,
+      iterations: 2,
+      memoryPowerOf2: 16,
+    );
+
+    final Uint8List passwordBytes = utf8.encode(masterPassword);
+    argon2.init(parameters);
+    final result = Uint8List(32);
+    argon2.generateBytes(passwordBytes, result, 0, result.length);
+
+    final hashedPassword = base64.encode(result);
+
     await storage.write(key: 'master_password', value: hashedPassword);
   }
+
 }
