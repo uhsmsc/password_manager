@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pwd/encryption/encryption_util.dart';
 import 'package:pwd/models/account.dart';
 import 'package:pwd/widgets/input_field.dart';
+import 'package:uuid/uuid.dart';
 
 class NewAccountScreen extends StatelessWidget {
   const NewAccountScreen({super.key, required this.onSave});
@@ -33,13 +35,13 @@ class NewAccountScreen extends StatelessWidget {
                 minimumSize: const Size(200, 40),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
-                  ),
+                ),
               ),
               onPressed: () => _saveAccount(context, urlController.text, loginController.text, passwordController.text),
               child: const Text(
                 'Добавить аккаунт',
-                ),
               ),
+            ),
           ],
         ),
       ),
@@ -47,12 +49,28 @@ class NewAccountScreen extends StatelessWidget {
   }
 
   void _saveAccount(BuildContext context, String url, String login, String password) {
-    if (url.isNotEmpty && login.isNotEmpty && password.isNotEmpty) {
-      final Account newAccount = Account(url: url, login: login, password: password);
+  if (url.isNotEmpty && login.isNotEmpty && password.isNotEmpty) {
+    const uuid = Uuid();
+    final accountId = uuid.v4();
+
+    encryptPassword(password).then((encryptedPasswordMap) {
+      final newAccount = Account(
+        id: accountId,
+        url: url,
+        login: login,
+        password: encryptedPasswordMap['encryptedPassword']!,
+        iv: encryptedPasswordMap['iv']!,
+      );
+
       onSave(newAccount);
+
       Navigator.pop(context);
-    } else {
-      // Обработка ошибки
-    }
+    }).catchError((error) {
+      print('Error encrypting password: $error');
+    });
+  } else {
+    // Обработка ошибки
   }
+}
+
 }

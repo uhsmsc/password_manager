@@ -64,9 +64,9 @@ class GreetingScreen extends StatelessWidget {
                 child: const Text(
                   'Начать',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold, 
+                    fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 238, 239, 255),
-                    ),
+                  ),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pwd/encryption/encryption_util.dart';
 import 'package:pwd/models/account.dart';
 import 'package:pwd/widgets/common_widgets.dart';
 
@@ -9,20 +10,20 @@ class AccountDetailsScreen extends StatefulWidget {
   final Account account;
 
   @override
-  State<StatefulWidget> createState() {
-    return _AccountDetailsScreenState();
-  }
+  State<AccountDetailsScreen> createState() => _AccountDetailsScreenState();
 }
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late TextEditingController _passwordController;
+  late Future<String?> _decryptedPassword;
   bool _showPassword = false;
 
   @override
   void initState() {
     super.initState();
-    _passwordController = TextEditingController();
-    _passwordController.text = widget.account.password;
+    _passwordController = TextEditingController(text: widget.account.password);
+    _decryptedPassword =
+        decryptPassword(widget.account.password, widget.account.iv);
   }
 
   @override
@@ -36,9 +37,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          widget.account.url,
-        ),
+        title: Text(widget.account.url),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -60,10 +59,24 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               widget.account.login,
               () => _copyToClipboard('Логин', widget.account.login),
             ),
-            _buildListTile(
-              'PASSWORD',
-              _showPassword ? widget.account.password : _getMaskedPassword(),
-              () => _copyToClipboard('Пароль', widget.account.password),
+            FutureBuilder<String?>(
+              future: _decryptedPassword,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Ошибка: ${snapshot.error}');
+                } else {
+                  final decryptedPassword = snapshot.data ?? '';
+                  return _buildListTile(
+                    'PASSWORD',
+                    _showPassword
+                        ? decryptedPassword
+                        : _getMaskedPassword(decryptedPassword),
+                    () => _copyToClipboard('Пароль', decryptedPassword),
+                  );
+                }
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -73,7 +86,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     minimumSize: const Size(200, 40),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      ),
+                    ),
                   ),
                   onPressed: () {
                     setState(() {
@@ -114,7 +127,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     SnackbarHandler.showSnackbar(context, '$label скопирован в буфер обмена');
   }
 
-  String _getMaskedPassword() {
-    return '•' * widget.account.password.length;
+  String _getMaskedPassword(decryptedPassword) {
+    return '•' * decryptedPassword.length;
   }
 }

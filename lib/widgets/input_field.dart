@@ -23,7 +23,8 @@ class InputField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 15),
+        labelStyle:
+            Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 15),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
         ),

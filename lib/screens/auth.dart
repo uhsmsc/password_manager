@@ -45,12 +45,16 @@ class AuthenticationScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
             InputField(
               controller: passwordController,
               label: 'Мастер-пароль',
             ),
-            const SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -67,9 +71,9 @@ class AuthenticationScreen extends StatelessWidget {
                   authenticateAndNavigate(context);
                 },
                 child: const Text(
-                  'Разблокировать', 
+                  'Разблокировать',
                   style: TextStyle(
-                    fontWeight: FontWeight.bold, 
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -80,50 +84,51 @@ class AuthenticationScreen extends StatelessWidget {
     );
   }
 
-void authenticateAndNavigate(BuildContext context) {
-  final enteredPassword = passwordController.text;
-  authenticate(enteredPassword).then((authenticated) {
-    if (authenticated) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      // Очистка поля ввода
-      passwordController.clear();
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text(
-              'Ошибка аутентификации',
-              style: TextStyle(
-                color:  Color.fromARGB(255, 238, 239, 255),
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-              ),),
-            content: const Text(
-              'Неверный мастер-пароль',
-              style: TextStyle(
-                color:  Color.fromARGB(255, 212, 213, 227),
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
+  void authenticateAndNavigate(BuildContext context) {
+    final enteredPassword = passwordController.text;
+    authenticate(enteredPassword).then((authenticated) {
+      if (authenticated) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        // Очистка поля ввода
+        passwordController.clear();
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text(
+                'Ошибка аутентификации',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 238, 239, 255),
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              content: const Text(
+                'Неверный мастер-пароль',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 212, 213, 227),
+                  fontSize: 15,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('ОК'),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  });
-}
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('ОК'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
+  }
 
-Future<bool> authenticate(String enteredPassword) async {
-    final storage = FlutterSecureStorage();
+  Future<bool> authenticate(String enteredPassword) async {
+    const storage = FlutterSecureStorage();
     final masterPasswordHash = await storage.read(key: 'master_password');
     if (masterPasswordHash != null) {
       final argon2 = Argon2BytesGenerator();
@@ -145,12 +150,9 @@ Future<bool> authenticate(String enteredPassword) async {
       final expectedHash = base64.decode(masterPasswordHash);
 
       return hash.length == expectedHash.length &&
-          IterableEquality().equals(hash, expectedHash);
+          const IterableEquality().equals(hash, expectedHash);
     } else {
       return false;
     }
   }
-
-
-
 }

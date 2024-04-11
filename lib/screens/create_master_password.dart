@@ -55,13 +55,17 @@ class _CreateMasterPasswordScreenState
             ),
             const SizedBox(height: 20),
             InputField(
-              controller: confirmPasswordController,
-              label: 'Подтвердите мастер-пароль',
-              onChanged: (value) {_checkPasswordsMatch(value); _checkFirstPasswordEntered(value);}
-              
+                controller: confirmPasswordController,
+                label: 'Подтвердите мастер-пароль',
+                onChanged: (value) {
+                  _checkPasswordsMatch(value);
+                  _checkFirstPasswordEntered(value);
+                }),
+            const SizedBox(
+              height: 10,
             ),
-            const SizedBox(height: 10,),
-            if (!passwordsMatch && isFirstPasswordEntered) // Выводим сообщение, если пароли не совпадают
+            if (!passwordsMatch &&
+                isFirstPasswordEntered)
               const Text(
                 'Пароли не совпадают',
                 style: TextStyle(
@@ -89,8 +93,8 @@ class _CreateMasterPasswordScreenState
                   child: const Text(
                     'Создать',
                     style: TextStyle(
-                    fontWeight: FontWeight.bold, 
-                    color: Color.fromARGB(255, 238, 239, 255),
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 238, 239, 255),
                     ),
                   ),
                 ),
@@ -103,10 +107,10 @@ class _CreateMasterPasswordScreenState
 
   void _checkPasswordsMatch(String value) {
     setState(() {
-      passwordsMatch = passwordController.text ==
-              confirmPasswordController.text &&
-          passwordController.text.isNotEmpty &&
-          confirmPasswordController.text.isNotEmpty;
+      passwordsMatch =
+          passwordController.text == confirmPasswordController.text &&
+              passwordController.text.isNotEmpty &&
+              confirmPasswordController.text.isNotEmpty;
     });
     if (passwordsMatch) {
       FocusScope.of(context).unfocus();
@@ -119,8 +123,8 @@ class _CreateMasterPasswordScreenState
     });
   }
 
-Future<void> registerFirstTime(String masterPassword) async {
-    final storage = FlutterSecureStorage();
+  Future<void> registerFirstTime(String masterPassword) async {
+    const storage = FlutterSecureStorage();
     final argon2 = Argon2BytesGenerator();
     final salt = Uint8List.fromList(utf8.encode('somesalt'));
 
@@ -141,5 +145,4 @@ Future<void> registerFirstTime(String masterPassword) async {
 
     await storage.write(key: 'master_password', value: hashedPassword);
   }
-
 }

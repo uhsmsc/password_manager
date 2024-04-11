@@ -5,7 +5,7 @@ import 'package:pwd/models/account.dart';
 import 'package:pwd/screens/account_details.dart';
 
 class AccountItem extends StatelessWidget {
-  const AccountItem({super.key, required this.account});
+  const AccountItem({Key? key, required this.account}) : super(key: key);
 
   final Account account;
 
@@ -60,7 +60,6 @@ class AccountItem extends StatelessWidget {
   }
 
   Widget _buildIcon(String iconUrl) {
-    print(iconUrl);
     return SizedBox(
       width: 55,
       height: 55,
@@ -70,7 +69,7 @@ class AccountItem extends StatelessWidget {
         height: 50,
         fit: BoxFit.cover,
         placeholder: (context, url) =>
-            const CircularProgressIndicator(), // _generateAlternativeIcon(account.url),
+            _generateAlternativeIcon(account.url), //const CircularProgressIndicator(), // _generateAlternativeIcon(account.url),
         errorWidget: (context, url, error) =>
             _generateAlternativeIcon(account.url),
       ),

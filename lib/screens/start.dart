@@ -12,16 +12,16 @@ class StartScreen extends StatelessWidget {
       future: isMasterPasswordSet(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Показываем индикатор загрузки пока выполняется проверка
+          return const CircularProgressIndicator();
         }
         if (snapshot.hasError) {
-          return Text('Ошибка: ${snapshot.error}'); // Если произошла ошибка при проверке
+          return Text('Ошибка: ${snapshot.error}');
         }
         final bool isMasterPasswordSet = snapshot.data ?? false;
         if (isMasterPasswordSet) {
-          return AuthenticationScreen(); // Если мастер-пароль уже задан, переходим к аутентификации
+          return AuthenticationScreen();
         } else {
-          return const GreetingScreen(); // Если мастер-пароль еще не задан, переходим к созданию
+          return const GreetingScreen();
         }
       },
     );

@@ -1,17 +1,32 @@
-import 'package:uuid/uuid.dart';
+import 'package:hive/hive.dart';
 
-const uuid = Uuid();
+part 'account.g.dart';
 
-class Account {
+@HiveType(typeId: 0)
+class Account extends HiveObject {
+  @HiveField(0)
+  late String id;
+
+  @HiveField(1)
+  late String url;
+
+  @HiveField(2)
+  late String login;
+
+  @HiveField(3)
+  late String password;
+
+  @HiveField(4)
+  late String iconUrl;
+
+  @HiveField(5)
+  late String iv;
+
   Account({
+    required this.id,
     required this.url,
     required this.login,
     required this.password,
-    }) : id = uuid.v4(), iconUrl = 'https://icons.bitwarden.net/$url/icon.png';
-
-  String id;
-  String url;
-  String login;
-  String password;
-  String iconUrl;
-} 
+    required this.iv,
+  }) : iconUrl = 'https://icons.bitwarden.net/$url/icon.png';
+}
