@@ -27,13 +27,13 @@ Future<encrypt.Key> generateEncryptionKey() async {
 Future<Map<String, String>> encryptPassword(String password) async {
   // Получаем ключ шифрования
   final key = await generateEncryptionKey();
-  print('Encryption key: $key');
 
   // Генерируем случайный вектор инициализации (IV)
   final iv = encrypt.IV.fromSecureRandom(16); // 16 байт для AES
 
   // Создаем экземпляр шифратора AES с полученным ключом и IV
-  final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+  final encrypter =
+      encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
 
   // Преобразуем пароль в Uint8List
   final Uint8List passwordBytes = Uint8List.fromList(password.codeUnits);
@@ -48,13 +48,15 @@ Future<Map<String, String>> encryptPassword(String password) async {
   };
 }
 
-Future<String?> decryptPassword(String encryptedPassword, String ivString) async {
+Future<String?> decryptPassword(
+    String encryptedPassword, String ivString) async {
   if (encryptedPassword.isNotEmpty && ivString.isNotEmpty) {
     // Получаем ключ шифрования
     final key = await generateEncryptionKey();
-    
+
     // Создаем экземпляр шифратора AES с полученным ключом
-    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+    final encrypter =
+        encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
 
     // Декодируем IV из строки
     final iv = encrypt.IV.fromBase64(ivString);

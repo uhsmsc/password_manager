@@ -64,8 +64,7 @@ class _CreateMasterPasswordScreenState
             const SizedBox(
               height: 10,
             ),
-            if (!passwordsMatch &&
-                isFirstPasswordEntered)
+            if (!passwordsMatch && isFirstPasswordEntered)
               const Text(
                 'Пароли не совпадают',
                 style: TextStyle(

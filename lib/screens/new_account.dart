@@ -24,9 +24,13 @@ class NewAccountScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            InputField(controller: urlController, label: 'URL', obscureText: false),
+            InputField(
+                controller: urlController, label: 'URL', obscureText: false),
             const SizedBox(height: 20),
-            InputField(controller: loginController, label: 'LOGIN/EMAIL', obscureText: false),
+            InputField(
+                controller: loginController,
+                label: 'LOGIN/EMAIL',
+                obscureText: false),
             const SizedBox(height: 20),
             InputField(controller: passwordController, label: 'PASSWORD'),
             const SizedBox(height: 30),
@@ -37,7 +41,8 @@ class NewAccountScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              onPressed: () => _saveAccount(context, urlController.text, loginController.text, passwordController.text),
+              onPressed: () => _saveAccount(context, urlController.text,
+                  loginController.text, passwordController.text),
               child: const Text(
                 'Добавить аккаунт',
               ),
@@ -48,8 +53,8 @@ class NewAccountScreen extends StatelessWidget {
     );
   }
 
-  void _saveAccount(BuildContext context, String url, String login, String password) {
-  if (url.isNotEmpty && login.isNotEmpty && password.isNotEmpty) {
+  void _saveAccount(
+      BuildContext context, String url, String login, String password) {
     const uuid = Uuid();
     final accountId = uuid.v4();
 
@@ -65,12 +70,6 @@ class NewAccountScreen extends StatelessWidget {
       onSave(newAccount);
 
       Navigator.pop(context);
-    }).catchError((error) {
-      print('Error encrypting password: $error');
     });
-  } else {
-    // Обработка ошибки
   }
-}
-
 }

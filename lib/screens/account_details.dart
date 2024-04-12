@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:pwd/encryption/encryption_util.dart';
 import 'package:pwd/models/account.dart';
+import 'package:pwd/screens/edit_account.dart';
 import 'package:pwd/widgets/common_widgets.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
-  const AccountDetailsScreen({super.key, required this.account});
+  const AccountDetailsScreen(
+      {super.key, required this.account, required this.accountBox});
 
   final Account account;
+  final Box<Account> accountBox;
 
   @override
-  State<AccountDetailsScreen> createState() => _AccountDetailsScreenState();
+  State<StatefulWidget> createState() {
+    return _AccountDetailsScreenState();
+  }
 }
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late TextEditingController _passwordController;
   late Future<String?> _decryptedPassword;
   bool _showPassword = false;
+  late Box<Account> _accountBox;
+  late Account _account;
 
   @override
   void initState() {
@@ -24,6 +32,8 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     _passwordController = TextEditingController(text: widget.account.password);
     _decryptedPassword =
         decryptPassword(widget.account.password, widget.account.iv);
+    _accountBox = widget.accountBox;
+    _account = widget.account;
   }
 
   @override
@@ -37,11 +47,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.account.url),
+        title: Text(_account.url),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {},
+            onPressed: () => _openEditAccountScreen(context),
           ),
         ],
       ),
@@ -51,13 +61,13 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           children: [
             _buildListTile(
               'URL',
-              widget.account.url,
-              () => _copyToClipboard('URL', widget.account.url),
+              _account.url,
+              () => _copyToClipboard('URL', _account.url),
             ),
             _buildListTile(
               'LOGIN/EMAIL',
-              widget.account.login,
-              () => _copyToClipboard('Логин', widget.account.login),
+              _account.login,
+              () => _copyToClipboard('Логин', _account.login),
             ),
             FutureBuilder<String?>(
               future: _decryptedPassword,
@@ -77,6 +87,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   );
                 }
               },
+            ),
+            const SizedBox(
+              height: 22,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -127,7 +140,42 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     SnackbarHandler.showSnackbar(context, '$label скопирован в буфер обмена');
   }
 
-  String _getMaskedPassword(decryptedPassword) {
+  String _getMaskedPassword(String decryptedPassword) {
     return '•' * decryptedPassword.length;
+  }
+
+  void _openEditAccountScreen(BuildContext context) async {
+    final updatedAccount = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EditAccountScreen(
+          account: _account,
+          onSave: _saveAccount,
+        ),
+      ),
+    );
+
+    if (updatedAccount != null && updatedAccount is Account) {
+      _saveAccount(updatedAccount);
+    }
+  }
+
+  void _saveAccount(Account updatedAccount) async {
+    final updatedEncryptedAccount = Account(
+      id: updatedAccount.id,
+      url: updatedAccount.url,
+      login: updatedAccount.login,
+      password: updatedAccount.password,
+      iv: updatedAccount.iv,
+    );
+
+    _accountBox.put(_account.key, updatedEncryptedAccount);
+
+    Navigator.pop(context);
+
+    setState(() {
+      _account = updatedEncryptedAccount;
+      _decryptedPassword =
+          decryptPassword(updatedAccount.password, updatedAccount.iv);
+    });
   }
 }

@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:pwd/encryption/encryption_util.dart';
 import 'package:pwd/models/account.dart';
 
 class EditAccountScreen extends StatefulWidget {
   const EditAccountScreen({
-    Key? key,
+    super.key,
     required this.account,
     required this.onSave,
-    required this.accountBox,
-  }) : super(key: key);
+  });
 
   final Account account;
   final Function(Account) onSave;
-  final Box<Account> accountBox;
 
   @override
-  _EditAccountScreenState createState() => _EditAccountScreenState();
+  State<StatefulWidget> createState() {
+    return _EditAccountScreenState();
+  }
 }
 
 class _EditAccountScreenState extends State<EditAccountScreen> {
   late TextEditingController _urlController;
   late TextEditingController _loginController;
   late TextEditingController _passwordController;
-  late Box<Account> _accountBox;
+  bool _isObscure = true;
 
   @override
   void initState() {
     super.initState();
-    _accountBox = widget.accountBox; // Assigning the value from widget.accountBox
     _urlController = TextEditingController(text: widget.account.url);
     _loginController = TextEditingController(text: widget.account.login);
-    _passwordController = TextEditingController(text: widget.account.password);
+    _passwordController = TextEditingController();
+
+    _decryptPassword();
   }
 
   @override
@@ -54,33 +55,33 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.fromLTRB(28, 10, 28, 10),
+        child: ListView(
           children: [
-            Text('URL'),
-            TextField(
-              controller: _urlController,
-              decoration: InputDecoration(
-                hintText: 'Введите URL',
-              ),
+            _buildTextField('URL', _urlController, 'Введите URL'),
+            _buildTextField(
+                'LOGIN/EMAIL', _loginController, 'Введите логин или email'),
+            _buildPasswordField(
+                'PASSWORD', _passwordController, 'Введите пароль'),
+            const SizedBox(
+              height: 20,
             ),
-            const SizedBox(height: 20),
-            Text('LOGIN/EMAIL'),
-            TextField(
-              controller: _loginController,
-              decoration: InputDecoration(
-                hintText: 'Введите логин или email',
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text('PASSWORD'),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: 'Введите пароль',
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(196, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  onPressed: () => _saveAccount(),
+                  child: const Text(
+                    'Сохранить аккаунт',
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -88,16 +89,71 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     );
   }
 
-  void _saveAccount() {
+  Widget _buildTextField(
+      String labelText, TextEditingController controller, String hintText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextField(
+        controller: controller,
+        style: Theme.of(context).textTheme.bodyMedium,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle:
+              Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 20),
+          hintText: hintText,
+          isDense: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(
+      String labelText, TextEditingController controller, String hintText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextField(
+        controller: controller,
+        style: Theme.of(context).textTheme.bodyMedium,
+        obscureText: _isObscure,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle:
+              Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 20),
+          hintText: hintText,
+          isDense: true,
+          suffixIcon: IconButton(
+            icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
+            onPressed: () {
+              setState(() {
+                _isObscure = !_isObscure;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _decryptPassword() async {
+    final decryptedPassword =
+        await decryptPassword(widget.account.password, widget.account.iv) ?? '';
+    setState(() {
+      _passwordController.text = decryptedPassword;
+    });
+  }
+
+  void _saveAccount() async {
+    final newPassword = _passwordController.text;
+    final encryptedPasswordData = await encryptPassword(newPassword);
+
     final updatedAccount = Account(
       id: widget.account.id,
       url: _urlController.text,
       login: _loginController.text,
-      password: _passwordController.text,
-      iv: widget.account.iv,
+      password: encryptedPasswordData['encryptedPassword']!,
+      iv: encryptedPasswordData['iv']!,
     );
 
-    _accountBox.put(updatedAccount.key, updatedAccount); // Using _accountBox here
-    Navigator.pop(context, updatedAccount); // Передаем обновленный аккаунт на экран AccountDetailsScreen
+    widget.onSave(updatedAccount);
   }
 }
