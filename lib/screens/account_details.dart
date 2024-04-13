@@ -7,8 +7,11 @@ import 'package:pwd/screens/edit_account.dart';
 import 'package:pwd/widgets/common_widgets.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
-  const AccountDetailsScreen(
-      {super.key, required this.account, required this.accountBox});
+  const AccountDetailsScreen({
+    Key? key,
+    required this.account,
+    required this.accountBox,
+  }) : super(key: key);
 
   final Account account;
   final Box<Account> accountBox;
@@ -150,6 +153,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         builder: (context) => EditAccountScreen(
           account: _account,
           onSave: _saveAccount,
+          onDelete: _deleteAccount,
         ),
       ),
     );
@@ -177,5 +181,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       _decryptedPassword =
           decryptPassword(updatedAccount.password, updatedAccount.iv);
     });
+  }
+
+  void _deleteAccount(Account updatedAccount) {
+    _accountBox.delete(updatedAccount.key);
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }

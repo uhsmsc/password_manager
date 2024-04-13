@@ -7,10 +7,12 @@ class EditAccountScreen extends StatefulWidget {
     super.key,
     required this.account,
     required this.onSave,
+    required this.onDelete,
   });
 
   final Account account;
   final Function(Account) onSave;
+  final Function(Account) onDelete;
 
   @override
   State<StatefulWidget> createState() {
@@ -49,8 +51,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         title: const Text('Редактировать аккаунт'),
         actions: [
           IconButton(
-            onPressed: () => _saveAccount(),
-            icon: const Icon(Icons.save),
+            onPressed: () => _deleteAccount(),
+            icon: const Icon(Icons.delete),
           ),
         ],
       ),
@@ -60,12 +62,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           children: [
             _buildTextField('URL', _urlController, 'Введите URL'),
             _buildTextField(
-                'LOGIN/EMAIL', _loginController, 'Введите логин или email'),
-            _buildPasswordField(
-                'PASSWORD', _passwordController, 'Введите пароль'),
-            const SizedBox(
-              height: 20,
+              'LOGIN/EMAIL',
+              _loginController,
+              'Введите логин или email',
             ),
+            _buildPasswordField(
+              'PASSWORD',
+              _passwordController,
+              'Введите пароль',
+            ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -77,9 +83,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     ),
                   ),
                   onPressed: () => _saveAccount(),
-                  child: const Text(
-                    'Сохранить аккаунт',
-                  ),
+                  child: const Text('Сохранить аккаунт'),
                 ),
               ],
             ),
@@ -90,7 +94,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   }
 
   Widget _buildTextField(
-      String labelText, TextEditingController controller, String hintText) {
+    String labelText,
+    TextEditingController controller,
+    String hintText,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
@@ -108,7 +115,10 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   }
 
   Widget _buildPasswordField(
-      String labelText, TextEditingController controller, String hintText) {
+    String labelText,
+    TextEditingController controller,
+    String hintText,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
@@ -122,7 +132,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           hintText: hintText,
           isDense: true,
           suffixIcon: IconButton(
-            icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
+            icon: Icon(
+              _isObscure ? Icons.visibility : Icons.visibility_off,
+            ),
             onPressed: () {
               setState(() {
                 _isObscure = !_isObscure;
@@ -155,5 +167,32 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     );
 
     widget.onSave(updatedAccount);
+  }
+
+  void _deleteAccount() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Удаление аккаунта'),
+          content: Text('Вы уверены, что хотите удалить аккаунт?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                widget.onDelete(widget.account);
+                Navigator.of(context).pop();
+              },
+              child: Text('Удалить'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
