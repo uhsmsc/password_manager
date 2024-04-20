@@ -130,10 +130,11 @@ class AuthenticationScreen extends StatelessWidget {
   Future<bool> authenticate(String enteredPassword) async {
     const storage = FlutterSecureStorage();
     final masterPasswordHash = await storage.read(key: 'master_password');
+    final saltString = await storage.read(key: 'master_password_salt');
+    final salt = base64.decode(saltString!);
     if (masterPasswordHash != null) {
       final argon2 = Argon2BytesGenerator();
       final passwordBytes = utf8.encode(enteredPassword);
-      final salt = Uint8List.fromList(utf8.encode('somesalt'));
 
       final parameters = Argon2Parameters(
         Argon2Parameters.ARGON2_i,
