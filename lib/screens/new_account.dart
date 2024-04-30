@@ -5,7 +5,7 @@ import 'package:pwd/widgets/input_field.dart';
 import 'package:uuid/uuid.dart';
 
 class NewAccountScreen extends StatelessWidget {
-  const NewAccountScreen({super.key, required this.onSave});
+  const NewAccountScreen({Key? key, required this.onSave}) : super(key: key);
 
   final Function(Account) onSave;
 
@@ -53,8 +53,8 @@ class NewAccountScreen extends StatelessWidget {
     );
   }
 
-  void _saveAccount(
-      BuildContext context, String url, String login, String password) {
+  void _saveAccount(BuildContext context, String url, String login,
+      String password) async {
     const uuid = Uuid();
     final accountId = uuid.v4();
 
@@ -64,12 +64,15 @@ class NewAccountScreen extends StatelessWidget {
         url: url,
         login: login,
         password: encryptedPasswordMap['encryptedPassword']!,
-        iv: encryptedPasswordMap['iv']!,
       );
 
       onSave(newAccount);
+
+      // Сохранение IV
+      EncryptionUtil.saveIVForAccount(accountId, encryptedPasswordMap['iv']!);
 
       Navigator.pop(context);
     });
   }
 }
+

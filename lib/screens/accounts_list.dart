@@ -7,7 +7,8 @@ import 'package:pwd/widgets/account_item.dart';
 class AccountsListScreen extends StatefulWidget {
   final Box<Account> accountBox;
 
-  const AccountsListScreen({super.key, required this.accountBox});
+  const AccountsListScreen({Key? key, required this.accountBox})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -58,7 +59,9 @@ class _AccountsListScreenState extends State<AccountsListScreen> {
                   Text(
                     'Хранилище пустое...',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
                           fontSize: 23,
                         ),
                   ),

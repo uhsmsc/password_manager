@@ -11,7 +11,7 @@ class EditAccountScreen extends StatefulWidget {
   });
 
   final Account account;
-  final Function(Account) onSave;
+  final Function(Account, String) onSave;
   final Function(Account) onDelete;
 
   @override
@@ -29,10 +29,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   @override
   void initState() {
     super.initState();
+    _passwordController = TextEditingController(text: ' ');
     _urlController = TextEditingController(text: widget.account.url);
     _loginController = TextEditingController(text: widget.account.login);
-    _passwordController = TextEditingController();
-
     _decryptPassword();
   }
 
@@ -57,7 +56,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(28, 10, 28, 10),
+        padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
         child: ListView(
           children: [
             _buildTextField('URL', _urlController, 'Введите URL'),
@@ -146,14 +145,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     );
   }
 
-  void _decryptPassword() async {
-    final decryptedPassword =
-        await decryptPassword(widget.account.password, widget.account.iv) ?? '';
-    setState(() {
-      _passwordController.text = decryptedPassword;
-    });
-  }
-
   void _saveAccount() async {
     final newPassword = _passwordController.text;
     final encryptedPasswordData = await encryptPassword(newPassword);
@@ -163,10 +154,22 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       url: _urlController.text,
       login: _loginController.text,
       password: encryptedPasswordData['encryptedPassword']!,
-      iv: encryptedPasswordData['iv']!,
     );
 
-    widget.onSave(updatedAccount);
+    final iv = encryptedPasswordData['iv'];
+
+    if (iv != null) {
+      widget.onSave(updatedAccount, iv);
+    }
+  }
+
+  void _decryptPassword() async {
+    final iv = await EncryptionUtil.getIVForAccount(widget.account.id) ?? '';
+    final decryptedPassword =
+        await decryptPassword(widget.account.password, iv) ?? '';
+    setState(() {
+      _passwordController.text = decryptedPassword;
+    });
   }
 
   void _deleteAccount() {
@@ -174,21 +177,35 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Удаление аккаунта'),
-          content: Text('Вы уверены, что хотите удалить аккаунт?'),
+          title: const Text(
+            'Удаление аккаунта',
+            style: TextStyle(
+              color: Color.fromARGB(255, 238, 239, 255),
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            'Вы уверены, что хотите удалить аккаунт?',
+            style: TextStyle(
+              color: Color.fromARGB(255, 212, 213, 227),
+              fontSize: 15,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Отмена'),
+              child: const Text('Отмена'),
             ),
             TextButton(
               onPressed: () {
                 widget.onDelete(widget.account);
                 Navigator.of(context).pop();
               },
-              child: Text('Удалить'),
+              child: const Text('Удалить'),
             ),
           ],
         );

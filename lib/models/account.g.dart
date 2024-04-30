@@ -21,14 +21,13 @@ class AccountAdapter extends TypeAdapter<Account> {
       url: fields[1] as String,
       login: fields[2] as String,
       password: fields[3] as String,
-      iv: fields[5] as String,
     )..iconUrl = fields[4] as String;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,9 +37,7 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(3)
       ..write(obj.password)
       ..writeByte(4)
-      ..write(obj.iconUrl)
-      ..writeByte(5)
-      ..write(obj.iv);
+      ..write(obj.iconUrl);
   }
 
   @override

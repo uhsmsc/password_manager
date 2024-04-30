@@ -8,10 +8,10 @@ import 'package:pwd/widgets/common_widgets.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({
-    Key? key,
+    super.key,
     required this.account,
     required this.accountBox,
-  }) : super(key: key);
+  });
 
   final Account account;
   final Box<Account> accountBox;
@@ -33,16 +33,20 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   void initState() {
     super.initState();
     _passwordController = TextEditingController(text: widget.account.password);
-    _decryptedPassword =
-        decryptPassword(widget.account.password, widget.account.iv);
     _accountBox = widget.accountBox;
     _account = widget.account;
+    _decryptedPassword = _getDecryptedPassword();
   }
 
   @override
   void dispose() {
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<String?> _getDecryptedPassword() async {
+    final iv = await EncryptionUtil.getIVForAccount(_account.id) ?? '';
+    return decryptPassword(_account.password, iv);
   }
 
   @override
@@ -148,7 +152,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   void _openEditAccountScreen(BuildContext context) async {
-    final updatedAccount = await Navigator.of(context).push(
+    final updatedAccountWithIV = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EditAccountScreen(
           account: _account,
@@ -158,33 +162,36 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       ),
     );
 
-    if (updatedAccount != null && updatedAccount is Account) {
-      _saveAccount(updatedAccount);
+    if (updatedAccountWithIV != null &&
+        updatedAccountWithIV is Map<String, dynamic>) {
+      final updatedAccount = updatedAccountWithIV['account'] as Account;
+      final iv = updatedAccountWithIV['iv'] as String;
+      _saveAccount(updatedAccount, iv);
     }
   }
 
-  void _saveAccount(Account updatedAccount) async {
+  void _saveAccount(Account updatedAccount, String iv) async {
     final updatedEncryptedAccount = Account(
       id: updatedAccount.id,
       url: updatedAccount.url,
       login: updatedAccount.login,
       password: updatedAccount.password,
-      iv: updatedAccount.iv,
     );
 
     _accountBox.put(_account.key, updatedEncryptedAccount);
+    EncryptionUtil.saveIVForAccount(_account.id, iv);
 
     Navigator.pop(context);
 
     setState(() {
       _account = updatedEncryptedAccount;
-      _decryptedPassword =
-          decryptPassword(updatedAccount.password, updatedAccount.iv);
+      _decryptedPassword = decryptPassword(updatedAccount.password, iv);
     });
   }
 
   void _deleteAccount(Account updatedAccount) {
     _accountBox.delete(updatedAccount.key);
+    EncryptionUtil.deleteIVForAccount(updatedAccount.id);
     Navigator.pop(context);
     Navigator.pop(context);
   }

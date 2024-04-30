@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hive/hive.dart';
 import 'package:pwd/models/account.dart';
 import 'package:pwd/screens/account_details.dart';
 
 class AccountItem extends StatelessWidget {
-  const AccountItem(
-      {super.key, required this.account, required this.accountBox});
+  const AccountItem({super.key, required this.account, required this.accountBox});
 
   final Account account;
   final Box<Account> accountBox;
@@ -63,43 +63,37 @@ class AccountItem extends StatelessWidget {
   }
 
   Widget _buildIcon(String iconUrl) {
-    final random = Random().nextInt(100000);
-    final urlWithRandom = '$iconUrl?$random';
-
     return SizedBox(
       width: 55,
       height: 55,
-      child: Image.network(
-        urlWithRandom,
+      child: CachedNetworkImage(
+        imageUrl: iconUrl,
         width: 50,
         height: 50,
         fit: BoxFit.cover,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          } else {
-            return const CircularProgressIndicator();
-          }
-        },
-        errorBuilder:
-            (BuildContext context, Object error, StackTrace? stackTrace) {
-          return _generateAlternativeIcon(account.url);
-        },
+        placeholder: (context, url) =>
+            const CircularProgressIndicator(),
+        errorWidget: (context, url, error) =>
+            _generateAlternativeIcon(account.url),
       ),
     );
   }
 
   Widget _generateAlternativeIcon(String text) {
-    return Container(
-      color: _generateRandomColor(),
-      child: Center(
-        child: Text(
-          text.isNotEmpty ? text[0].toUpperCase() : '',
-          style: const TextStyle(color: Colors.white),
+    try {
+      return Container(
+        color: _generateRandomColor(),
+        child: Center(
+          child: Text(
+            text.isNotEmpty ? text[0].toUpperCase() : '',
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (error) {
+      print('Error generating alternative icon: $error');
+      return Container();
+    }
   }
 
   Color _generateRandomColor() {

@@ -41,7 +41,7 @@ Future<Map<String, String>> encryptPassword(String password) async {
   // Шифруем пароль
   final encryptedPassword = encrypter.encryptBytes(passwordBytes, iv: iv);
 
-  // Возвращаем зашифрованный пароль в виде строки и строку с IV
+  // Возвращаем зашифрованный пароль в виде строки
   return {
     'encryptedPassword': encryptedPassword.base64,
     'iv': iv.base64,
@@ -76,5 +76,21 @@ Future<String?> decryptPassword(
     return decryptedPassword;
   } else {
     return null; // Возвращаем null, если зашифрованный пароль или IV пустые
+  }
+}
+
+class EncryptionUtil {
+  static const storage = FlutterSecureStorage();
+
+  static Future<void> saveIVForAccount(String accountId, String iv) async {
+    await storage.write(key: '${accountId}_iv', value: iv);
+  }
+
+  static Future<String?> getIVForAccount(String accountId) async {
+    return await storage.read(key: '${accountId}_iv');
+  }
+
+  static Future<void> deleteIVForAccount(String accountId) async {
+    await storage.delete(key: '${accountId}_iv');
   }
 }

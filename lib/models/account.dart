@@ -19,14 +19,10 @@ class Account extends HiveObject {
   @HiveField(4)
   late String iconUrl;
 
-  @HiveField(5)
-  late String iv;
-
   Account({
     required this.id,
     required this.url,
     required this.login,
     required this.password,
-    required this.iv,
   }) : iconUrl = 'https://icons.bitwarden.net/$url/icon.png';
 }
