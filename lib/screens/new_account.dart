@@ -68,7 +68,6 @@ class NewAccountScreen extends StatelessWidget {
 
       onSave(newAccount);
 
-      // Сохранение IV
       EncryptionUtil.saveIVForAccount(accountId, encryptedPasswordMap['iv']!);
 
       Navigator.pop(context);

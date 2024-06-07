@@ -25,23 +25,15 @@ Future<encrypt.Key> generateEncryptionKey() async {
 }
 
 Future<Map<String, String>> encryptPassword(String password) async {
-  // Получаем ключ шифрования
   final key = await generateEncryptionKey();
-
-  // Генерируем случайный вектор инициализации (IV)
-  final iv = encrypt.IV.fromSecureRandom(16); // 16 байт для AES
-
-  // Создаем экземпляр шифратора AES с полученным ключом и IV
+  final iv = encrypt.IV.fromSecureRandom(16);
+  
   final encrypter =
       encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
-
-  // Преобразуем пароль в Uint8List
   final Uint8List passwordBytes = Uint8List.fromList(password.codeUnits);
 
-  // Шифруем пароль
   final encryptedPassword = encrypter.encryptBytes(passwordBytes, iv: iv);
 
-  // Возвращаем зашифрованный пароль в виде строки
   return {
     'encryptedPassword': encryptedPassword.base64,
     'iv': iv.base64,
@@ -51,31 +43,25 @@ Future<Map<String, String>> encryptPassword(String password) async {
 Future<String?> decryptPassword(
     String encryptedPassword, String ivString) async {
   if (encryptedPassword.isNotEmpty && ivString.isNotEmpty) {
-    // Получаем ключ шифрования
     final key = await generateEncryptionKey();
-
-    // Создаем экземпляр шифратора AES с полученным ключом
     final encrypter =
         encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
 
-    // Декодируем IV из строки
+
     final iv = encrypt.IV.fromBase64(ivString);
 
-    // Декодируем строку в байтовый массив
     final Uint8List encryptedBytes = base64.decode(encryptedPassword);
 
-    // Расшифровываем пароль
     final decryptedBytes = encrypter.decryptBytes(
       encrypt.Encrypted(encryptedBytes),
-      iv: iv, // Передаем IV для расшифровки
+      iv: iv,
     );
 
-    // Преобразуем байтовый массив обратно в строку
     final decryptedPassword = utf8.decode(decryptedBytes);
 
     return decryptedPassword;
   } else {
-    return null; // Возвращаем null, если зашифрованный пароль или IV пустые
+    return null;
   }
 }
 
@@ -94,3 +80,4 @@ class EncryptionUtil {
     await storage.delete(key: '${accountId}_iv');
   }
 }
+

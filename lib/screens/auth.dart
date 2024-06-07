@@ -97,7 +97,7 @@ class AuthenticationScreen extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text(
-                'Ошибка аутентификации',
+                'Ошибка авторизации',
                 style: TextStyle(
                   color: Color.fromARGB(255, 238, 239, 255),
                   fontSize: 19,
@@ -156,4 +156,5 @@ class AuthenticationScreen extends StatelessWidget {
       return false;
     }
   }
+  
 }
